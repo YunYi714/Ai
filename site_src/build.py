@@ -3,7 +3,9 @@ import importlib, json, pathlib, shutil, html
 from config import *
 ROOT = pathlib.Path(__file__).parent
 OUT = ROOT.parent / "docs"
-tools = sorted((importlib.import_module(f"tools.{p.stem}") for p in (ROOT/"tools").glob("*.py") if not p.stem.startswith("_")), key=lambda m: m.ORDER)
+def load(d): return sorted((importlib.import_module(f"{d}.{p.stem}") for p in (ROOT/d).glob("*.py") if not p.stem.startswith("_")), key=lambda m: m.ORDER)
+tools = load("tools"); guides = load("guides")
+TMAP = {t.SLUG: t for t in tools}
 
 def adsense_head():
     return f'<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={ADSENSE_CLIENT}" crossorigin="anonymous"></script>' if ADSENSE_CLIENT else ""
@@ -14,19 +16,43 @@ def ad_slot():
 def page(path, title, desc, body, jsonld=None, extra_js=""):
     url = f"{SITE_URL}/{path}".replace("/index.html", "/")
     ld = "".join(f'<script type="application/ld+json">{json.dumps(j, ensure_ascii=False)}</script>' for j in (jsonld or []))
-    nav = "".join(f'<a href="{t.SLUG}.html">{getattr(t,"NAV",t.TITLE.split("（")[0].replace("計算機",""))}</a>' for t in tools[:4])
+    nav = '<a href="rights-checkup.html">權益健檢</a><a href="rights.html">權益懶人包</a><a href="how-to-claim-rights.html">爭取權益</a><a href="./#tools">計算工具</a>' 
     doc = f'''<!DOCTYPE html><html lang="zh-Hant-TW"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{html.escape(title)}</title><meta name="description" content="{html.escape(desc)}">
 <link rel="canonical" href="{url}"><meta property="og:title" content="{html.escape(title)}"><meta property="og:description" content="{html.escape(desc)}">
 <meta property="og:type" content="website"><meta property="og:url" content="{url}"><meta property="og:locale" content="zh_TW">
 <link rel="stylesheet" href="assets/style.css">{adsense_head()}{ld}</head><body>
-<header><a href="./">🧮 {SITE_NAME}</a><nav>{nav}<a href="./">全部工具</a></nav></header>
+<header><a href="./">🧮 {SITE_NAME}</a><nav>{nav}</nav></header>
 <main>{body}</main>
 <footer>© 2026 {SITE_NAME}｜{SITE_TAGLINE}<br><a href="about.html">關於本站</a><a href="privacy.html">隱私權政策</a><a href="contact.html">聯絡我們</a>
 <p>本站計算結果僅供參考，不構成法律或財務建議，實際權益請以主管機關解釋為準。</p></footer>
 <script src="assets/common.js"></script>{extra_js}</body></html>'''
     (OUT/path).write_text(doc, encoding="utf-8")
+
+def rights_box(t):
+    gs = [g for g in guides if t.SLUG in getattr(g, "TOOLS", [])]
+    links = "".join(f'<li><a href="{g.SLUG}.html">{g.TITLE}</a></li>' for g in gs)
+    return f'<div class="card" style="border-color:#e0a800;background:#fffaf0"><b>⚠️ 覺得權益受損？</b><ul>{links}<li><a href="how-to-claim-rights.html"><b>爭取權益的方法：蒐證、申訴、調解</b></a></li></ul></div>'
+
+def guide_pages():
+    for g in guides:
+        parts = [f'<h1>{g.TITLE}</h1><p class="lead">{g.SHORT}</p>']
+        if g.RULES: parts.append(f'<h2>法律怎麼規定？</h2>{g.RULES}')
+        if g.MYTHS: parts.append('<h2>常見的違法說法</h2>' + "".join(f'<div class="card"><b>❌ 「{m}」</b><p style="margin:.4em 0 0">✅ {t}</p></div>' for m, t in g.MYTHS))
+        parts.append(ad_slot())
+        parts.append(('<h2>爭取權益的方法</h2>' if g.RULES else '') + g.ACTIONS)
+        if g.RULES: parts.append('<p>👉 完整流程與訊息範本：<a href="how-to-claim-rights.html">爭取權益的方法</a></p>')
+        if g.FAQ: parts.append('<h2>常見問題</h2>' + "".join(f"<details><summary>{q}</summary><p>{a}</p></details>" for q, a in g.FAQ))
+        rel = "".join(f'<a href="{TMAP[s].SLUG}.html"><b>{TMAP[s].TITLE}</b><span>{TMAP[s].SHORT}</span></a>' for s in g.TOOLS)
+        others = "".join(f'<li><a href="{o.SLUG}.html">{o.TITLE}</a></li>' for o in guides if o is not g)
+        parts.append(f'<p class="note">最後更新：{UPDATED}。本文為法規整理，不構成法律意見，個案請洽勞工局或律師。</p><h2>相關工具</h2><div class="grid">{rel}</div><h2>其他權益懶人包</h2><ul>{others}</ul>')
+        ld = [{"@context":"https://schema.org","@type":"Article","headline":g.TITLE,"description":g.DESC,"inLanguage":"zh-TW","dateModified":UPDATED,"url":f"{SITE_URL}/{g.SLUG}.html"}]
+        if g.FAQ: ld.append({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":q,"acceptedAnswer":{"@type":"Answer","text":a}} for q,a in g.FAQ]})
+        page(f"{g.SLUG}.html", f"{g.TITLE}｜{SITE_NAME}", g.DESC, "".join(parts), ld)
+    cards = "".join(f'<a href="{g.SLUG}.html"><b>{g.TITLE}</b><span>{g.SHORT}</span></a>' for g in guides)
+    page("rights.html", f"勞工權益懶人包：國定假日、勞健保、加班、扣薪、離職｜{SITE_NAME}", "工讀生、兼職、正職必看的勞工權益懶人包：每篇整理法律規定、老闆常見的違法說法，以及爭取權益的方法。",
+         f'<h1>勞工權益懶人包</h1><p class="lead">很多人不知道自己的權益被剝奪了。每篇都整理了法律規定、常見的違法說法，以及<b>爭取權益的方法</b>。</p><p><a href="rights-checkup.html"><b>👉 不確定從哪裡看起？先做 3 分鐘權益健檢</b></a></p><div class="grid">{cards}</div>')
 
 def build():
     if OUT.exists(): shutil.rmtree(OUT)
@@ -37,14 +63,18 @@ def build():
         faq = "".join(f"<details><summary>{q}</summary><p>{a}</p></details>" for q, a in t.FAQ)
         related = "".join(f'<a href="{o.SLUG}.html"><b>{o.TITLE}</b><span>{o.SHORT}</span></a>' for o in tools if o is not t)
         body = f'''<h1>{t.TITLE}</h1><p class="lead">{t.SHORT}</p><div class="card">{t.FORM}</div>{ad_slot()}
-{t.ARTICLE}<h2>常見問題</h2>{faq}<p class="note">最後更新：{UPDATED}</p>{ad_slot()}<h2>其他好用工具</h2><div class="grid">{related}</div>'''
+{t.ARTICLE}<h2>常見問題</h2>{faq}{rights_box(t)}<p class="note">最後更新：{UPDATED}</p>{ad_slot()}<h2>其他好用工具</h2><div class="grid">{related}</div>'''
         ld = [{"@context":"https://schema.org","@type":"WebApplication","name":t.TITLE,"description":t.DESC,"url":f"{SITE_URL}/{t.SLUG}.html",
                "applicationCategory":"FinanceApplication","operatingSystem":"All","inLanguage":"zh-TW","offers":{"@type":"Offer","price":"0","priceCurrency":"TWD"}},
               {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":q,"acceptedAnswer":{"@type":"Answer","text":a}} for q,a in t.FAQ]}]
         page(f"{t.SLUG}.html", f"{t.TITLE}｜{SITE_NAME}", t.DESC, body, ld, f"<script>{t.JS}</script>")
+    guide_pages()
     cards = "".join(f'<a href="{t.SLUG}.html"><b>{t.TITLE}</b><span>{t.SHORT}</span></a>' for t in tools)
-    page("index.html", f"{SITE_NAME}｜加班費、特休、資遣費、房貸、分期利率免費計算", f"{SITE_NAME}：{SITE_TAGLINE}。加班費、特休天數、資遣費、最低工資、房貸、分期付款利率、複利，輸入數字立即算出結果，依台灣最新法規。",
-         f'<h1>{SITE_NAME}</h1><p class="lead">{SITE_TAGLINE}。免註冊、免下載，手機也好用，依台灣最新法規計算。</p><div class="grid">{cards}</div>{ad_slot()}'
+    gcards = "".join(f'<a href="{g.SLUG}.html"><b>{g.TITLE}</b><span>{g.SHORT}</span></a>' for g in guides)
+    page("index.html", f"{SITE_NAME}｜加班費、特休、資遣費、房貸、分期利率免費計算", f"{SITE_NAME}：{SITE_TAGLINE}。勞工權益健檢、國定假日加倍、工讀生勞健保、加班費、特休天數、資遣費、最低工資、房貸、分期付款利率、複利，輸入數字立即算出結果，依台灣最新法規。",
+         f'<h1>{SITE_NAME}</h1><p class="lead">{SITE_TAGLINE}。很多人不知道自己的權益被剝奪了：國定假日上班沒加倍、工讀生沒保勞健保、勞退從薪水扣……這裡幫你一次查清楚，並教你怎麼爭取。</p>'
+         '<div class="card" style="border-color:var(--c)"><b style="font-size:1.15rem">🩺 勞工權益健檢</b><p style="margin:.3em 0">回答 10 個問題，3 分鐘知道老闆有沒有違法。工讀生必做。</p><a href="rights-checkup.html"><button>開始健檢</button></a></div>'
+         f'<h2>權益懶人包</h2><div class="grid">{gcards}</div>{ad_slot()}<h2 id="tools">計算工具</h2><div class="grid">{cards}</div>'
          '<h2>為什麼做這個網站？</h2><p>勞基法的加班費、特休、資遣費規定其實不難，但條文寫得很繞，很多人不知道自己該拿多少。分期付款、房貸的利率也常常讓人看不清真實成本。這裡把常見的計算做成簡單工具，並附上法條依據與範例，讓每個人都能自己算清楚。</p>',
          [{"@context":"https://schema.org","@type":"WebSite","name":SITE_NAME,"url":SITE_URL+"/","inLanguage":"zh-TW"}])
     page("about.html", f"關於本站｜{SITE_NAME}", f"關於{SITE_NAME}", f'<h1>關於本站</h1><p>{SITE_NAME}提供台灣勞工權益與個人理財的免費線上試算工具，所有計算都在你的瀏覽器中完成，不會上傳你輸入的任何資料。</p><p>各工具依《勞動基準法》、《勞工退休金條例》及勞動部公告編寫，並附上計算方式與法條說明。法規如有修正，我們會盡快更新。計算結果僅供參考，實際權益請以主管機關解釋為準。</p><p>發現錯誤或想要新的計算工具？歡迎<a href="contact.html">聯絡我們</a>。</p>')
@@ -57,7 +87,7 @@ def build():
 <h2>外部連結</h2><p>本站可能包含其他網站的連結，這些網站的隱私權政策不在本政策範圍內。</p>
 <h2>政策修訂</h2><p>本政策如有修訂，將公告於本頁面。如有疑問請<a href="contact.html">聯絡我們</a>。</p>''')
     page("404.html", f"找不到頁面｜{SITE_NAME}", "找不到頁面", f'<h1>找不到這個頁面</h1><p>回到<a href="./">首頁</a>看看所有工具。</p><div class="grid">{cards}</div>')
-    urls = [""] + [f"{t.SLUG}.html" for t in tools] + ["about.html", "privacy.html", "contact.html"]
+    urls = [""] + [f"{t.SLUG}.html" for t in tools] + ["rights.html"] + [f"{g.SLUG}.html" for g in guides] + ["about.html", "privacy.html", "contact.html"]
     (OUT/"sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
         "".join(f"<url><loc>{SITE_URL}/{u}</loc><lastmod>{UPDATED}</lastmod></url>\n" for u in urls) + "</urlset>\n")
     (OUT/"robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {SITE_URL}/sitemap.xml\n")

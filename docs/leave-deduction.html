@@ -1,0 +1,41 @@
+<!DOCTYPE html><html lang="zh-Hant-TW"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>請假扣薪計算機（事假、病假、生理假、全勤獎金）｜試算好幫手</title><meta name="description" content="請假扣薪計算機：輸入月薪、全勤獎金、假別與天數，依勞工請假規則與性別平等工作法計算事假、病假、生理假、家庭照顧假可扣的薪資與全勤獎金上限，含2026年病假新制。">
+<link rel="canonical" href="https://yunyi714.github.io/Ai/leave-deduction.html"><meta property="og:title" content="請假扣薪計算機（事假、病假、生理假、全勤獎金）｜試算好幫手"><meta property="og:description" content="請假扣薪計算機：輸入月薪、全勤獎金、假別與天數，依勞工請假規則與性別平等工作法計算事假、病假、生理假、家庭照顧假可扣的薪資與全勤獎金上限，含2026年病假新制。">
+<meta property="og:type" content="website"><meta property="og:url" content="https://yunyi714.github.io/Ai/leave-deduction.html"><meta property="og:locale" content="zh_TW">
+<link rel="stylesheet" href="assets/style.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "請假扣薪計算機（事假、病假、生理假、全勤獎金）", "description": "請假扣薪計算機：輸入月薪、全勤獎金、假別與天數，依勞工請假規則與性別平等工作法計算事假、病假、生理假、家庭照顧假可扣的薪資與全勤獎金上限，含2026年病假新制。", "url": "https://yunyi714.github.io/Ai/leave-deduction.html", "applicationCategory": "FinanceApplication", "operatingSystem": "All", "inLanguage": "zh-TW", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "TWD"}}</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "請病假要附診斷證明嗎？", "acceptedAnswer": {"@type": "Answer", "text": "公司可以依工作規則要求提供證明，但不能刁難。一般短天數病假常見做法是事後補附就診證明。"}}, {"@type": "Question", "name": "遲到 3 分鐘被扣 100 元合法嗎？", "acceptedAnswer": {"@type": "Answer", "text": "如果超過依時薪比例計算的金額，就是違法的「罰款」。用月薪 ÷ 240 算出時薪，再乘以遲到時間就是上限。"}}]}</script></head><body>
+<header><a href="./">🧮 試算好幫手</a><nav><a href="rights-checkup.html">權益健檢</a><a href="rights.html">權益懶人包</a><a href="how-to-claim-rights.html">爭取權益</a><a href="./#tools">計算工具</a></nav></header>
+<main><h1>請假扣薪計算機（事假、病假、生理假、全勤獎金）</h1><p class="lead">請一天假會被扣多少？全勤獎金可以扣嗎？2026 病假新制一起算。</p><div class="card">
+<div class="row"><div><label for="w">月薪（不含全勤獎金）</label><input id="w" inputmode="decimal" value="32000"></div>
+<div><label for="b">全勤獎金（沒有填 0）</label><input id="b" inputmode="decimal" value="2000"></div></div>
+<div class="row"><div><label for="t">假別</label><select id="t">
+<option value="p">事假</option><option value="f">家庭照顧假</option><option value="s">普通傷病假（病假）</option><option value="m">生理假</option>
+<option value="o">特休、婚假、喪假、公假、公傷病假</option><option value="l">遲到（分鐘）</option></select></div>
+<div><label for="d" id="dl">請假天數</label><input id="d" inputmode="decimal" value="1"></div></div>
+<div id="sbox"><label for="used">今年已請過的病假天數（不含這次）</label><input id="used" inputmode="decimal" value="0"></div>
+<button onclick="calc()">計算</button><div class="result" id="out"></div></div><div class="ad"></div>
+
+<h2>各種假別的工資與全勤獎金</h2>
+<table><tr><th>假別</th><th>天數</th><th>工資</th><th>可以扣全勤嗎？</th></tr>
+<tr><td>事假</td><td>一年 14 天</td><td>不給</td><td>依公司規定</td></tr>
+<tr><td>家庭照顧假</td><td>一年 7 天（併入事假）</td><td>不給</td><td><b>不可以</b></td></tr>
+<tr><td>普通傷病假</td><td>未住院一年 30 天</td><td>半薪</td><td>只能依比例扣（2026 新制）</td></tr>
+<tr><td>生理假</td><td>每月 1 天</td><td>半薪</td><td><b>不可以</b></td></tr>
+<tr><td>特休、婚假、喪假、公假、公傷病假</td><td>依規定</td><td>全薪</td><td><b>不可以</b></td></tr></table>
+<h2>2026 年病假新制重點</h2><ul><li>一年病假 10 天內，公司不得因此在考績、調薪、排班等方面給你不利對待。</li><li>全勤獎金只能按病假天數比例扣。例如全勤 3,000 元、請 1 天病假，最多扣 100 元。</li><li>為了照顧家人請的事假，可以按小時請。</li></ul><h2>常見問題</h2><details><summary>請病假要附診斷證明嗎？</summary><p>公司可以依工作規則要求提供證明，但不能刁難。一般短天數病假常見做法是事後補附就診證明。</p></details><details><summary>遲到 3 分鐘被扣 100 元合法嗎？</summary><p>如果超過依時薪比例計算的金額，就是違法的「罰款」。用月薪 ÷ 240 算出時薪，再乘以遲到時間就是上限。</p></details><div class="card" style="border-color:#e0a800;background:#fffaf0"><b>⚠️ 覺得權益受損？</b><ul><li><a href="leave-rights.html">特休、病假、生理假被刁難？請假權益懶人包</a></li><li><a href="illegal-deductions.html">遲到罰錢、打破東西扣薪、押證件？違法扣薪懶人包</a></li><li><a href="how-to-claim-rights.html"><b>爭取權益的方法：蒐證、申訴、調解</b></a></li></ul></div><p class="note">最後更新：2026-11-25</p><div class="ad"></div><h2>其他好用工具</h2><div class="grid"><a href="rights-checkup.html"><b>勞工權益健檢：3 分鐘檢查老闆有沒有違法</b><span>回答 10 個問題，馬上知道你的薪水、保險、假日權益有沒有被剝奪。工讀生必做。</span></a><a href="holiday-pay.html"><b>2027 國定假日一覽與出勤工資計算機</b><span>勞工一年 16 天國定假日，上班要給雙倍。算算你該拿多少。</span></a><a href="overtime.html"><b>加班費計算機（平日、休息日、國定假日）</b><span>輸入月薪與加班時數，依勞基法第24、39條自動算出加班費。</span></a><a href="annual-leave.html"><b>特休天數計算機（勞基法第38條）</b><span>輸入到職日，算出你今年有幾天特休、下一次增加是什麼時候。</span></a><a href="severance.html"><b>資遣費計算機（勞退新制／舊制）</b><span>輸入到職日、離職日與平均工資，算出資遣費。</span></a><a href="notice-period.html"><b>資遣預告期間與預告工資計算機</b><span>被資遣要提前幾天通知？沒預告可以拿多少預告工資？</span></a><a href="minimum-wage.html"><b>2027 最低工資查詢與月薪時薪換算</b><span>2027 年月薪 30,900、時薪 205？檢查你的薪水有沒有低於最低工資。</span></a><a href="installment-apr.html"><b>分期付款實際年利率計算機</b><span>「0 手續費」分期真的划算嗎？算出分期、貸款的真實年利率。</span></a><a href="loan.html"><b>房貸／信貸每月還款計算機（含寬限期）</b><span>本息平均攤還、本金平均攤還、寬限期，一次算出月付金與總利息。</span></a><a href="compound-interest.html"><b>複利計算機（定期定額存錢試算）</b><span>每月存一點，幾年後會變多少？用複利算給你看。</span></a></div></main>
+<footer>© 2026 試算好幫手｜台灣勞工權益查詢與免費試算工具<br><a href="about.html">關於本站</a><a href="privacy.html">隱私權政策</a><a href="contact.html">聯絡我們</a>
+<p>本站計算結果僅供參考，不構成法律或財務建議，實際權益請以主管機關解釋為準。</p></footer>
+<script src="assets/common.js"></script><script>
+$('t').onchange=()=>{const t=$('t').value;$('dl').textContent=t=='l'?'遲到幾分鐘':'請假天數';$('d').value=t=='l'?10:1;$('sbox').style.display=t=='s'?'block':'none'};$('t').onchange();
+function calc(){const w=num('w'),b=num('b'),t=$('t').value,d=num('d'),day=w/30,hr=w/240;let ded=0,bmax=0,notes=[];
+ if(t=='p'){ded=day*d;bmax=b;notes.push('事假一年 14 天內不給工資。全勤獎金能否扣、扣多少，依公司規定（工作規則或契約），但不能超過上表上限。')}
+ else if(t=='f'){ded=day*d;bmax=0;notes.push('家庭照顧假併入事假計算（一年 7 天），不給工資，但<b>不能扣全勤獎金</b>，也不能有其他不利處分（性別平等工作法第20、21條）。可以按小時請。')}
+ else if(t=='s'){const u=num('used'),half=Math.max(0,Math.min(d,30-u)),none=d-half;ded=day*0.5*half+day*none;bmax=b*d/30;
+  notes.push('一年病假 30 天內（未住院）工資折半發給，超過的部分公司可以不給。');notes.push('2026 年新制：全勤獎金只能<b>依病假天數比例扣</b>（全勤 ÷ 30 × 天數），不能整筆扣光。');
+  if(u+d<=10)notes.push('今年病假合計未超過 10 天：公司<b>不得</b>因此給你不利處分（例如考績、調薪、排班）。')}
+ else if(t=='m'){ded=day*0.5*d;bmax=0;notes.push('生理假每月可請 1 天，工資減半發給，<b>不能扣全勤獎金</b>，也不能影響考績（性別平等工作法第14、21條）。一年 3 天內不併入病假。')}
+ else if(t=='o'){ded=0;bmax=0;notes.push('這些假別工資照給，也<b>不能扣全勤獎金</b>。')}
+ else{ded=hr*d/60;bmax=b;notes.push('遲到只能依實際遲到時間按比例扣薪。遲到 5 分鐘扣 1 小時、扣「罰款」都違法（勞基法第22、26條）。全勤獎金依公司規定處理。')}
+ show('out',`<div>公司最多可以扣的薪資</div><div class="big">NT$ ${fmt(Math.round(ded))}</div>
+ <table><tr><td>日薪（月薪 ÷ 30）</td><td class=n>${fmt(day)}</td></tr><tr><td>全勤獎金最多可扣</td><td class=n>NT$ ${fmt(Math.round(bmax))}</td></tr></table>
+ <ul>${notes.map(n=>'<li>'+n+'</li>').join('')}</ul><p class=note>如果公司扣得比這裡算出的更多，可能已經違法。</p>`)}</script></body></html>
